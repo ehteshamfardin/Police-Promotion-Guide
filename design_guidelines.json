@@ -1,0 +1,378 @@
+{
+  "app_name": "Police Promotion Academy (পুলিশ প্রমোশন একাডেমি)",
+  "personality": "6 Glass / Luxe DARK (adapted with 7 Dark-First Utility high-contrast metrics for exam preparation)",
+  "personality_one_liner": "A prestigious, authoritative dark-themed exam preparation command center combining dark navy sophistication with professional gold accents for Bengali police officers.",
+  "color": {
+    "surface": "#0F141C",
+    "onSurface": "#F4F6F9",
+    "surfaceSecondary": "#1A2230",
+    "onSurfaceSecondary": "#FFFFFF",
+    "surfaceTertiary": "#242E42",
+    "onSurfaceTertiary": "#D0D7DE",
+    "surfaceInverse": "#FFFFFF",
+    "onSurfaceInverse": "#0F141C",
+    "brand": "#D4AF37",
+    "brandPrimary": "#D4AF37",
+    "onBrandPrimary": "#0F141C",
+    "brandSecondary": "#3B82F6",
+    "onBrandSecondary": "#FFFFFF",
+    "brandTertiary": "rgba(212, 175, 55, 0.15)",
+    "onBrandTertiary": "#F4F6F9",
+    "success": "#10B981",
+    "onSuccess": "#FFFFFF",
+    "warning": "#F59E0B",
+    "onWarning": "#0F141C",
+    "error": "#EF4444",
+    "onError": "#FFFFFF",
+    "info": "#3B82F6",
+    "onInfo": "#FFFFFF",
+    "border": "rgba(255, 255, 255, 0.08)",
+    "borderStrong": "#D4AF37",
+    "divider": "rgba(255, 255, 255, 0.06)",
+    "muted": "#94A3B8",
+    "onBrand": "#0F141C"
+  },
+  "typography": {
+    "displayFontFamily": "Noto Sans Bengali",
+    "textFontFamily": "Noto Sans Bengali",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous vertical rhythm with 1.7-1.9 line height for Bengali script clarity and accessible touch targets >= 44x44pt.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "2",
+  "navigation": "bottom_tabs",
+  "icon_set": "MaterialCommunityIcons",
+  "glassmorphism": {
+    "enabled": "true",
+    "do's": [
+      "Use frosted glass overlays with brand tint on featured cards and headers",
+      "Apply translucent surface styling with blur on sticky bottom navigation and headers"
+    ],
+    "dont's": [
+      "Never apply blur to form inputs or dense text reading areas",
+      "Never allow low contrast text over glass surfaces"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Splash",
+      "purpose": "Immersive dark navy launch screen with golden police shield emblem and loading indicator.",
+      "states": {
+        "loading": "Showing animated golden emblem and welcome text in Bengali",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Centered logo, app title in Noto Sans Bengali, subtle pulse animation, automatic transition to Onboarding or Home."
+    },
+    {
+      "name": "Onboarding",
+      "purpose": "3-step interactive intro highlighting police promotion exam modules, timed mock tests, and AI study assistance.",
+      "states": {
+        "loading": "Standard render",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Full-bleed imagery with dark gradient scrim, bottom paginated indicator, and sticky primary action 'শুরু করুন' (Get Started)."
+    },
+    {
+      "name": "Login",
+      "purpose": "Secure officer credential entry with service ID and PIN / password.",
+      "states": {
+        "loading": "Verifying service ID...",
+        "empty": "Please enter Service ID",
+        "error": "Invalid Service ID or PIN. Try again."
+      },
+      "layout": "Single column form with top badge logo, labeled inputs, and sticky primary button."
+    },
+    {
+      "name": "Registration",
+      "purpose": "New officer profile creation with rank, unit, and service ID.",
+      "states": {
+        "loading": "Creating profile...",
+        "empty": "Fill all required fields",
+        "error": "Service ID already registered."
+      },
+      "layout": "Scrollable form with rank selector dropdown, service ID, password inputs, and register CTA."
+    },
+    {
+      "name": "Home Dashboard",
+      "purpose": "Central command center with welcome card, daily progress stats, quick actions, subjects, and recommended tests.",
+      "states": {
+        "loading": "Skeleton card loaders for daily progress and subjects",
+        "empty": "No recent tests found. Start an MCQ practice session.",
+        "error": "Failed to load dashboard data. Retry."
+      },
+      "layout": "Scrollable vertical feed with sticky top header, welcome banner, 8 quick action grid, horizontal subject scroll, and vertical recommended tests."
+    },
+    {
+      "name": "Subject List",
+      "purpose": "Comprehensive catalog of all police promotion subjects (Constitution, Penal Code, Police Act, etc.).",
+      "states": {
+        "loading": "Subject list skeletons",
+        "empty": "No subjects available.",
+        "error": "Network error loading subjects. Retry."
+      },
+      "layout": "Single column card list with subject title, progress bar, lesson count, and chevron."
+    },
+    {
+      "name": "Subject Details",
+      "purpose": "Detailed breakdown of a chosen subject with chapters, notes, and topic-wise MCQ practice.",
+      "states": {
+        "loading": "Loading chapters...",
+        "empty": "No chapters added yet.",
+        "error": "Failed to load chapters."
+      },
+      "layout": "Header banner with subject statistics, accordion chapter list, and bottom sticky practice CTA."
+    },
+    {
+      "name": "MCQ Practice",
+      "purpose": "Interactive multiple choice question practice engine with instant feedback.",
+      "states": {
+        "loading": "Loading questions...",
+        "empty": "No questions available in this set.",
+        "error": "Error loading question set."
+      },
+      "layout": "Top progress indicator & timer, question card with Bengali text, 4 option buttons with instant color highlight, and bottom navigation controls."
+    },
+    {
+      "name": "MCQ Result",
+      "purpose": "Immediate post-practice summary showing score, correct/incorrect count, and explanation review.",
+      "states": {
+        "loading": "Calculating score...",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Circular score gauge, metrics breakdown cards, explanation review list, and action buttons ('পুনরায় চেষ্টা করুন', 'হোমে ফিরুন')."
+    },
+    {
+      "name": "Question Bank",
+      "purpose": "Searchable archive of previous years' questions categorized by law and year.",
+      "states": {
+        "loading": "Searching questions...",
+        "empty": "No questions matched your search query.",
+        "error": "Failed to search question bank."
+      },
+      "layout": "Top search bar with year/subject filter chips, scrollable question list with tags and bookmark button."
+    },
+    {
+      "name": "Mock Test List",
+      "purpose": "Full-length timed exam simulations mimicking actual police promotion board tests.",
+      "states": {
+        "loading": "Loading mock tests...",
+        "empty": "No active mock tests scheduled.",
+        "error": "Failed to fetch mock tests."
+      },
+      "layout": "Card list with test duration, total marks, difficulty badge, and 'অংশগ্রহণ করুন' (Take Test) button."
+    },
+    {
+      "name": "Mock Test Instructions",
+      "purpose": "Exam rules, negative marking details, and time limits before starting simulation.",
+      "states": {
+        "loading": "Loading instructions...",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Checklist of rules, warning banner, confirmation checkbox, and sticky start exam CTA."
+    },
+    {
+      "name": "Mock Test Interface",
+      "purpose": "Full-screen exam simulation with countdown timer, question palette, and navigation.",
+      "states": {
+        "loading": "Initializing secure test environment...",
+        "empty": "N/A",
+        "error": "Test session timeout."
+      },
+      "layout": "Top sticky header with countdown timer and question number, main question card, bottom question palette drawer, and submit button."
+    },
+    {
+      "name": "Mock Test Result",
+      "purpose": "Comprehensive exam performance scorecard with percentile rank and subject-wise accuracy.",
+      "states": {
+        "loading": "Generating scorecard...",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Score badge, rank analysis card, subject accuracy breakdown bars, and review wrong answers CTA."
+    },
+    {
+      "name": "Notes List",
+      "purpose": "Curated study notes, case laws, and legal commentary for promotion exams.",
+      "states": {
+        "loading": "Loading notes...",
+        "empty": "No notes available in this category.",
+        "error": "Failed to load notes."
+      },
+      "layout": "Category filter tabs and card list with note title, reading time, author, and bookmark icon."
+    },
+    {
+      "name": "Note Details",
+      "purpose": "Immersive legal note reading screen with adjustable font size and bookmarking.",
+      "states": {
+        "loading": "Loading note content...",
+        "empty": "Note content unavailable.",
+        "error": "Failed to load note."
+      },
+      "layout": "Sticky top bar with font size controls and bookmark toggle, scrollable article view with highlighted legal sections in Noto Sans Bengali."
+    },
+    {
+      "name": "Previous Questions",
+      "purpose": "Archive of past 10 years promotion board question papers with solved answers.",
+      "states": {
+        "loading": "Loading past papers...",
+        "empty": "No past papers found.",
+        "error": "Failed to load papers."
+      },
+      "layout": "Year-wise accordion list with PDF download indicator and online view button."
+    },
+    {
+      "name": "AI Question Generator placeholder",
+      "purpose": "Simulated AI custom test creator allowing officers to generate custom topic quizzes.",
+      "states": {
+        "loading": "AI generating custom quiz...",
+        "empty": "Select topics to generate questions.",
+        "error": "AI service temporarily busy."
+      },
+      "layout": "Topic selection chips, slider for question count, difficulty selector, and 'এআই প্রশ্ন তৈরি করুন' CTA."
+    },
+    {
+      "name": "AI Study Assistant placeholder",
+      "purpose": "Interactive legal AI chatbot to answer police regulations and criminal law queries.",
+      "states": {
+        "loading": "AI thinking...",
+        "empty": "Ask any legal question (e.g., 'ধারা ৩০২ এর বিধান কী?').",
+        "error": "Failed to connect to AI assistant."
+      },
+      "layout": "Chat message history feed, suggested prompt chips, and bottom sticky input bar with send button."
+    },
+    {
+      "name": "Bookmarks",
+      "purpose": "Saved questions and legal notes for quick revision before the exam.",
+      "states": {
+        "loading": "Loading bookmarks...",
+        "empty": "No bookmarks saved yet. Tap bookmark icon on any question or note.",
+        "error": "Failed to load bookmarks."
+      },
+      "layout": "Segmented tabs (Questions / Notes) and card list with delete/unsave action."
+    },
+    {
+      "name": "Wrong Answers",
+      "purpose": "Automated review log of all incorrectly answered MCQs during practice sessions.",
+      "states": {
+        "loading": "Loading incorrect answers...",
+        "empty": "Great job! No wrong answers recorded.",
+        "error": "Failed to load review log."
+      },
+      "layout": "Card list of wrong answers with user's answer vs correct answer and detailed legal explanation."
+    },
+    {
+      "name": "Progress Analytics",
+      "purpose": "Detailed performance graphs, subject-wise strengths, weaknesses, and study streak tracker.",
+      "states": {
+        "loading": "Analyzing performance data...",
+        "empty": "Complete at least one test to view analytics.",
+        "error": "Failed to load analytics."
+      },
+      "layout": "Top streak card, visual progress charts for accuracy over time, weak area breakdown, and study recommendation box."
+    },
+    {
+      "name": "Premium Page",
+      "purpose": "Showcase of VIP promotion test series, unlimited AI mock exams, and master legal notes.",
+      "states": {
+        "loading": "Loading premium plans...",
+        "empty": "N/A",
+        "error": "Failed to load offerings."
+      },
+      "layout": "Hero banner with golden crown badge, feature checklist comparing Free vs VIP, and upgrade CTA."
+    },
+    {
+      "name": "Subscription Page",
+      "purpose": "Secure checkout and plan selection screen (Monthly, Quarterly, Yearly VIP).",
+      "states": {
+        "loading": "Processing payment options...",
+        "empty": "N/A",
+        "error": "Payment gateway connection error."
+      },
+      "layout": "Plan comparison cards, promo code input, payment method selection (bKash, Nagad, Card), and subscribe button."
+    },
+    {
+      "name": "Profile",
+      "purpose": "Officer profile management displaying service rank, current posting, and exam countdown.",
+      "states": {
+        "loading": "Loading officer profile...",
+        "empty": "N/A",
+        "error": "Failed to load profile."
+      },
+      "layout": "Cover banner, avatar with rank insignia, officer details card, stats summary, and menu options."
+    },
+    {
+      "name": "Settings",
+      "purpose": "App preferences including dark theme toggle, notifications, font size, and Bengali language options.",
+      "states": {
+        "loading": "N/A",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Grouped list items with toggles for push notifications, audio feedback, font size selector, and logout button."
+    },
+    {
+      "name": "Notifications",
+      "purpose": "Alert center for exam date announcements, new mock test releases, and study tips.",
+      "states": {
+        "loading": "Loading notifications...",
+        "empty": "No new notifications.",
+        "error": "Failed to load notifications."
+      },
+      "layout": "Chronological list of notification cards with unread indicator badge and timestamp."
+    }
+  ],
+  "images": {
+    "splash_logo": {
+      "url": "https://images.unsplash.com/photo-1770219792101-d0d8ae839fc0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHw0fHxwb2xpY2UlMjBiYWRnZSUyMGdvbGQlMjBzaGllbGQlMjBsb2dvJTIwdHJhbnNwYXJlbnR8ZW58MHx8fHwxNzkxMzUxNjYyfDA&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1770219792101-d0d8ae839fc0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHw0fHxwb2xpY2UlMjBiYWRnZSUyMGdvbGQlMjBzaGllbGQlMjBsb2dvJTIwdHJhbnNwYXJlbnR8ZW58MHx8fHwxNzkxMzUxNjYyfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Police Golden Shield Logo"
+    },
+    "onboarding_hero": {
+      "url": "https://images.unsplash.com/photo-1734209648349-f316c5d5c2e9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwyfHxwb2xpY2UlMjBiYWRnZSUyMGdvbGQlMjBzaGllbGQlMjBsb2dvJTIwdHJhbnNwYXJlbnR8ZW58MHx8fHwxNzkxMzUxNjYyfDA&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1734209648349-f316c5d5c2e9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwyfHxwb2xpY2UlMjBiYWRnZSUyMGdvbGQlMjBzaGllbGQlMjBsb2dvJTIwdHJhbnNwYXJlbnR8ZW58MHx8fHwxNzkxMzUxNjYyfDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Police Uniform and Insignia"
+    },
+    "study_bg": {
+      "url": "https://images.unsplash.com/photo-1772408186777-7bbc603c4fb3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwxfHxzdHVkeSUyMG5vdGVzJTIwYm9vayUyMGdvbGQlMjBhYnN0cmFjdCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc5MTM1MTY2Mnww&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1772408186777-7bbc603c4fb3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNTl8MHwxfHNlYXJjaHwxfHxzdHVkeSUyMG5vdGVzJTIwYm9vayUyMGdvbGQlMjBhYnN0cmFgtCUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc5MTM1MTY2Mnww&ixlib=rb-4.1.0&q=85",
+      "alt": "Legal Study Notes Dark Background"
+    }
+  },
+  "instructions_to_main_agent": "Ensure Noto Sans Bengali UI font is loaded and applied across all Bengali text strings. Maintain dark navy (#0F141C) background with professional gold (#D4AF37) accents for police promotion exam preparation. Implement all 27 requested screens with robust loading, empty, and error states. Ensure touch targets >= 44x44pt and support sticky bottom navigation with 5 Bengali tabs (হোম, প্রশ্নপত্র, প্রশ্ন ব্যাংক, নোটস, প্রোফাইল)."
+}

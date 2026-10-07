@@ -1,0 +1,63 @@
+{
+  "summary": "Phase 1 UI/UX smoke-tested across all 27 Expo Router routes at mobile viewport 390x844 via web preview. Splash → onboarding/skip → login (demo auth any non-empty credentials) → home dashboard works end-to-end. Bottom tab bar switches between হোম, প্রশ্নপত্র, প্রশ্ন ব্যাংক, নোটস, প্রোফাইল. Register rank-selector modal, Mock Test full flow (instructions → agree → start → palette → submit → confirm → mock-result scorecard), Question Bank search/year chips/preview modal/bookmark toggle, Settings logout → /login, AI assistant chat (user→bot reply), AI question generator, Analytics, Notifications, Wrong Answers, Bookmarks, Subjects, Subject Details, Note Details, Premium, Subscription, Onboarding all render without React Native red screens or route errors. One CRITICAL blocker found: /mcq-practice final-question submit button is permanently stuck in loading state and cannot be tapped, so users cannot reach /mcq-result from MCQ practice. No deprecated packages (no expo-av/barcode-scanner/background-fetch). Safe area handled via useSafeAreaInsets correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "mcq-practice final submit button",
+        "issue": "On the last question (index === MCQ_QUESTIONS.length - 1), the Button prop loading={selected !== null && index === MCQ_QUESTIONS.length - 1} forces loading=true as soon as any option is selected. The shared Button component sets disabled={disabled || loading} (src/components/Button.tsx:54), so the submit button is permanently disabled while showing a spinner. Users cannot complete MCQ practice or reach /mcq-result. Reference: /app/frontend/app/mcq-practice.tsx:129. Fix: remove the loading prop (or set it only during an actual async transition, e.g. via a short setTimeout before router.replace).",
+        "testID": "mcq-practice-next-button",
+        "priority": "CRITICAL"
+      },
+      {
+        "component": "bank question card touch target",
+        "issue": "The Pressable that opens the preview modal only wraps the question Text, not the whole Card. Tapping subject chip / year chip / empty space of the card does nothing. The outer <Card testID='bank-question-card-{id}'> is misleading because it isn't the actual tap target. Reference: /app/frontend/app/(tabs)/bank.tsx:84-89.",
+        "testID": "bank-question-card-q1",
+        "priority": "LOW"
+      },
+      {
+        "component": "Modal (shared) testID",
+        "issue": "testID 'bank-question-modal' / 'mock-test-palette-modal' etc. are set on the Modal wrapper but the visible portal node does not expose it, so page.is_visible('[data-testid=bank-question-modal]') returns false even though the modal is clearly displayed. Add testID to the inner visible container to improve testability.",
+        "testID": "bank-question-modal",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/mock-instructions vs /mock-test",
+        "issues": [
+          "Instructions summary advertises ১০০ প্রশ্ন / ৬০ মিনিট but the actual mock-test demo only contains 10 questions (palette shows ১-১০). Demo data inconsistency - update MOCK_TESTS metadata or seed 100 demo questions to match."
+        ]
+      }
+    ],
+    "react_native_issues": [
+      {
+        "component": "console warnings (web preview)",
+        "issue": "'shadow* style props are deprecated. Use boxShadow' and 'useNativeDriver is not supported' are logged on splash and other screens. These are non-blocking RN-web warnings but should be cleaned up by migrating shadow* to boxShadow and setting useNativeDriver: false where appropriate for web."
+      }
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "FIX CRITICAL: /app/frontend/app/mcq-practice.tsx line 129 — remove or correctly scope the Button `loading` prop so the final-question submit is tappable. Suggested patch: drop the loading prop entirely (`loading={false}`), or set a transient local state `submitting` that is set only inside `next()` just before router.replace('/mcq-result'). Verify flow: select option on Q10 → tap 'পরবর্তী প্রশ্ন' → should land on /mcq-result.",
+    "FIX LOW: Make the entire bank question Card pressable (wrap Card in Pressable or put onPress on Card) so the whole card opens the preview modal.",
+    "FIX LOW: Align /mock-instructions metadata with actual mock-test question count (either seed 100 demo questions or display the real count: ১০ প্রশ্ন).",
+    "CLEANUP: Replace deprecated shadow* style props with boxShadow and set useNativeDriver:false (or wrap in Platform.OS === 'web' guard) to silence RN-web console warnings."
+  ],
+  "critical_code_review_comments": [
+    "Button component (src/components/Button.tsx:54) correctly disables onPress when loading is true; callers must not pass loading=true unless an async op is actually in progress. The mcq-practice.tsx usage violates this contract and causes the blocker above.",
+    "Bank card inner Pressable without testID means the actual tap target has no automation handle; outer Card testID is on a non-interactive wrapper (confusing).",
+    "No files exceed 700 lines. No HTML elements used. All text properly wrapped in <Text>. No hardcoded URLs. useSafeAreaInsets used correctly (not deprecated SafeAreaView from react-native)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only testing requested)", "frontend": "26/27 routes fully functional (~96%); 1 critical blocker on /mcq-practice completion"},
+  "seed_data_creation": "None — purely in-memory demo data per spec.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "After the mcq-practice loading-prop fix, re-run: open /mcq-practice, select any option across all 10 questions, verify navigation to /mcq-result on the 10th question's submit. Also re-check mock-instructions vs mock-test question-count consistency if main agent updates demo data.",
+  "rca_of_issue": "ROOT CAUSE (critical): In /app/frontend/app/mcq-practice.tsx:129, the next-button is rendered with loading={selected !== null && index === MCQ_QUESTIONS.length - 1}. The moment the user selects any option on the final question, selected becomes a number and index already equals MCQ_QUESTIONS.length - 1, so loading evaluates to true. The shared Button component (src/components/Button.tsx:54) applies disabled={disabled || loading}, which blocks the onPress handler forever. Since onPress is the only path that calls setPracticeResult(...) + router.replace('/mcq-result'), the user is trapped on question 10 and the practice-result screen is unreachable. REPRO: Login → Home → MCQ অনুশীলন → answer any 9 questions by tapping 'পরবর্তী প্রশ্ন' → on Q10 tap any option → observe that the submit button turns into a spinner and no further tap advances the screen. MITIGATION: Either (a) remove the loading prop entirely, or (b) introduce a `submitting` useState that is set to true inside next() right before router.replace, so the spinner only appears for the ~0ms during navigation."
+}

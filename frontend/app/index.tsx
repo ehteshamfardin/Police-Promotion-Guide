@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { storage } from "@/src/utils/storage";
+import { useAuth } from "@/src/providers/AuthProvider";
 import { fonts, lh, makeStyles, radius, spacing, typeScale, useTheme } from "@/src/theme";
 
 export default function Splash() {
@@ -12,6 +13,7 @@ export default function Splash() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const styles = useStyles();
+  const { session, loading } = useAuth();
 
   const scale = useRef(new Animated.Value(0.6)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -21,14 +23,21 @@ export default function Splash() {
       Animated.spring(scale, { toValue: 1, useNativeDriver: true, bounciness: 9 }),
       Animated.timing(opacity, { toValue: 1, duration: 600, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
     ]).start();
-
-    const timer = setTimeout(async () => {
-      const onboarded = await storage.getItem("ppa_onboarded", false);
-      router.replace(onboarded ? "/home" : "/onboarding");
-    }, 1900);
-    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    const timer = setTimeout(async () => {
+      const onboarded = await storage.getItem("ppa_onboarded", false);
+      if (!onboarded) {
+        router.replace("/onboarding");
+        return;
+      }
+      router.replace(session ? "/home" : "/login");
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [loading, session, router]);
 
   return (
     <View testID="splash-screen" style={[styles.container, { paddingBottom: insets.bottom + spacing.xl }]}>

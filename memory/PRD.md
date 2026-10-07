@@ -62,3 +62,29 @@ Premium, Subscription, Profile (tab), Settings, Notifications.
 ## Known minor items (non-blocking)
 - Mock instructions show full test spec (100q/60m) while demo interface runs a 10-question subset
 - RN-web console warnings for shadow* props / useNativeDriver (web-only, harmless)
+
+## Phase 2 — Supabase Auth & DB Foundation (2026-06-07)
+### Added
+- Supabase client (`src/lib/supabase.ts`) — AsyncStorage session persistence, auto token refresh, PKCE
+- `AuthProvider` (`src/providers/AuthProvider.tsx`) — session context
+- `src/lib/auth.ts` (signUp+profile metadata, email signIn, logout, forgotPassword, resetPassword) and `src/lib/profile.ts` (loadMyProfile / updateMyProfile — safe columns only)
+- Expanded Registration form: নাম, মোবাইল, ইমেইল, বর্তমান পদ, কাঙ্ক্ষিত পদ, ইউনিট, যোগদানের বছর, পাসওয়ার্ড, Confirm Password (rank selectors from BP_RANKS)
+- Real Login (email+password; phone only stored in profile), Forgot Password + Reset Password (deep-link) screens
+- Client-side protected-route guard in `app/_layout.tsx`; splash routes by session
+- Logout wired (Settings); Profile shows live Supabase profile data
+- `.env.example` (frontend + backend), secret key kept server-only
+- SQL migration `supabase/migrations/0001_init.sql`: tables profiles/ranks/subjects/topics, RLS, column-level grants (role/premium/subscription NOT client-updatable), auto-profile trigger (role forced USER), Bengali seed data; admin architecture prepared (no dashboard)
+
+### Verified
+- Signup reaches live Supabase (curl) with metadata stored; TypeScript clean
+- Testing agent (iteration_2): protected-route redirects, all auth form validations, navigation, forgot/reset UI — 27/28 pass (1 false negative)
+
+### User manual steps (one time, in their Supabase dashboard)
+1. SQL Editor → run `supabase/migrations/0001_init.sql`
+2. (Recommended) Authentication → Providers → Email → turn OFF "Confirm email" for instant register→Home
+3. Authentication → URL Configuration → add redirect `frontend://reset-password`
+
+### Security notes
+- Default role USER, never trusted from client; role/premium/subscription column-REVOKED from authenticated
+- RLS: users read/update only their own profile; catalog tables read-only to authenticated
+- Secret/service_role key never shipped in app (backend .env only)

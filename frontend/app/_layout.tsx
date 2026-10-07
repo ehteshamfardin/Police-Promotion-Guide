@@ -1,7 +1,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { LogBox } from "react-native";
+import { LogBox, View } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
@@ -9,6 +9,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 
 import { ErrorBoundary } from "@/src/components/error-boundary";
 import { ToastProvider } from "@/src/components/Toast";
+import { AuthProvider, useAuth } from "@/src/providers/AuthProvider";
 import { queryClient } from "@/src/query-client";
 import { themes } from "@/src/theme";
 
@@ -37,19 +38,48 @@ export default function RootLayout() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <KeyboardProvider>
-          <ToastProvider>
-            <StatusBar style="light" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: themes.light.surface },
-              }}
-            >
-              <Stack.Screen name="mock-test" options={{ animation: "fade", gestureEnabled: false }} />
-            </Stack>
-          </ToastProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <StatusBar style="light" />
+              <RootNavigator />
+            </ToastProvider>
+          </AuthProvider>
         </KeyboardProvider>
       </QueryClientProvider>
     </ErrorBoundary>
+  );
+}
+
+// Public routes (reachable while signed out). Everything else requires a session.
+const PUBLIC_SEGMENTS = new Set(["login", "register", "forgot-password", "reset-password", "onboarding"]);
+
+function RootNavigator() {
+  const { session, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) return;
+    const seg0 = segments[0] as string | undefined;
+    if (seg0 === undefined) return; // index (splash) handles its own routing
+    const isPublic = PUBLIC_SEGMENTS.has(seg0);
+    if (!session && !isPublic) {
+      router.replace("/login");
+    } else if (session && (seg0 === "login" || seg0 === "register" || seg0 === "onboarding")) {
+      router.replace("/home");
+    }
+  }, [session, loading, segments, router]);
+
+  return (
+    <View style={{ flex: 1, backgroundColor: themes.light.surface }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: themes.light.surface },
+        }}
+      >
+        <Stack.Screen name="mock-test" options={{ animation: "fade", gestureEnabled: false }} />
+      </Stack>
+    </View>
   );
 }

@@ -8,6 +8,7 @@ import { Icon } from "@/src/components/Icon";
 import { Header } from "@/src/components/Header";
 import { Screen } from "@/src/components/Screen";
 import { useToast } from "@/src/components/Toast";
+import { logout } from "@/src/lib/auth";
 import { fonts, lh, makeStyles, radius, spacing, typeScale, useTheme } from "@/src/theme";
 
 export default function Settings() {
@@ -103,7 +104,8 @@ export default function Settings() {
             <Pressable
               testID="settings-logout-button"
               style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}
-              onPress={() => {
+              onPress={async () => {
+                await logout();
                 toast.show("সফলভাবে লগ আউট হয়েছে", "success");
                 router.replace("/login");
               }}

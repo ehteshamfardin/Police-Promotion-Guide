@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/src/components/Button";
 import { Input } from "@/src/components/Input";
 import { useToast } from "@/src/components/Toast";
-import { OFFICER } from "@/src/data/demo";
+import { isEmail, signInEmail } from "@/src/lib/auth";
 import { fonts, lh, makeStyles, spacing, typeScale, useTheme } from "@/src/theme";
 
 export default function Login() {
@@ -22,16 +22,23 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = () => {
+  const submit = async () => {
     if (!serviceId.trim() || !password.trim()) {
-      toast.show("সার্ভিস আইডি ও পাসওয়ার্ড দিন", "error");
+      toast.show("ইমেইল ও পাসওয়ার্ড দিন", "error");
+      return;
+    }
+    if (!isEmail(serviceId)) {
+      toast.show("এই সংস্করণে ইমেইল দিয়ে লগ ইন করুন", "error");
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      router.replace("/home");
-    }, 700);
+    const { error } = await signInEmail(serviceId, password);
+    setLoading(false);
+    if (error) {
+      toast.show("ভুল ইমেইল বা পাসওয়ার্ড", "error");
+      return;
+    }
+    router.replace("/home");
   };
 
   return (
@@ -54,13 +61,14 @@ export default function Login() {
 
         <View style={styles.form}>
           <Input
-            label="সার্ভিস আইডি"
-            icon="badge-account-outline"
-            placeholder="যেমন: SI-4782"
+            label="মোবাইল / ইমেইল"
+            icon="account-outline"
+            placeholder="you@example.com"
             value={serviceId}
             onChangeText={setServiceId}
             testID="login-service-id-input"
             autoCapitalize="none"
+            keyboardType="email-address"
           />
           <Input
             label="পাসওয়ার্ড"
@@ -71,7 +79,7 @@ export default function Login() {
             secureTextEntry
             testID="login-password-input"
           />
-          <Pressable testID="login-forgot-password-link" onPress={() => toast.show("পাসওয়ার্ড রিসেট শীঘ্রই আসছে")}>
+          <Pressable testID="login-forgot-password-link" onPress={() => router.push("/forgot-password")}>
             <Text style={styles.forgot}>পাসওয়ার্ড ভুলে গেছেন?</Text>
           </Pressable>
         </View>
@@ -91,7 +99,7 @@ export default function Login() {
           </Pressable>
         </View>
 
-        <Text style={styles.hint}>ডেমো মোড — যেকোনো তথ্য দিয়ে লগ ইন করা যাবে</Text>
+        <Text style={styles.hint}>সাপাবেস দিয়ে নিরাপদ লগ ইন</Text>
       </KeyboardAwareScrollView>
     </View>
   );
@@ -169,5 +177,3 @@ const useStyles = makeStyles((colors) => ({
     marginTop: spacing.lg,
   },
 }));
-
-void OFFICER;

@@ -1,12 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Card } from "@/src/components/Card";
 import { Icon } from "@/src/components/Icon";
 import { PremiumBadge } from "@/src/components/PremiumBadge";
 import { usesNativeTabs } from "@/src/navigation";
+import { loadMyProfile } from "@/src/lib/profile";
 import { OFFICER, bn } from "@/src/data/demo";
 import { fonts, lh, makeStyles, radius, spacing, typeScale, useTheme } from "@/src/theme";
 
@@ -25,6 +27,12 @@ export default function Profile() {
   const styles = useStyles();
   const bottomChrome = usesNativeTabs ? insets.bottom : 0;
 
+  const { data: profile } = useQuery({ queryKey: ["my-profile"], queryFn: loadMyProfile });
+  const name = profile?.full_name || OFFICER.name;
+  const rank = profile?.current_rank || OFFICER.rank;
+  const unit = profile?.unit || OFFICER.unit;
+  const avatarLetter = (name || "অ").trim().charAt(0);
+
   return (
     <View testID="profile-screen" style={styles.container}>
       <View style={[styles.list, { paddingTop: insets.top, paddingBottom: bottomChrome + spacing.xxl }]}>
@@ -32,17 +40,17 @@ export default function Profile() {
         <LinearGradient colors={["#1A2740", colors.surfaceSecondary]} style={styles.cover}>
           <View style={styles.avatarWrap}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>র</Text>
+              <Text style={styles.avatarText}>{avatarLetter}</Text>
             </View>
             <View style={styles.insignia}>
               <Icon name="shield-half-full" size={16} color={colors.onBrandPrimary} />
             </View>
           </View>
-          <Text style={styles.name}>{OFFICER.name}</Text>
-          <Text style={styles.rank}>{OFFICER.rank} · {OFFICER.station}</Text>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.rank}>{rank} · {unit}</Text>
           <View style={styles.idRow}>
-            <Text style={styles.idText}>সার্ভিস আইডি: {OFFICER.serviceId}</Text>
-            <PremiumBadge label="ফ্রি প্ল্যান" style={{ backgroundColor: colors.surfaceTertiary }} />
+            <Text style={styles.idText}>{profile?.email || OFFICER.serviceId}</Text>
+            <PremiumBadge label={profile?.premium ? "ভিআইপি" : "ফ্রি প্ল্যান"} style={{ backgroundColor: profile?.premium ? colors.brandPrimary : colors.surfaceTertiary }} />
           </View>
         </LinearGradient>
 
